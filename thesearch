@@ -1,0 +1,54 @@
+const ogcollection = inputs.reports;
+const newidArray = [];
+const collectedids = [];
+
+//Creating internal array of ID number values
+for (let i=0; i<ogcollection.length; i++){
+  const id = Number.parseInt(ogcollection[i]['fields']['ReportID'].split('-')[1]);
+  collectedids.push(id);
+}
+
+//Checking for gaps between entries
+for (let i=0; i<ogcollection.length; i++){
+  const id = Number.parseInt(ogcollection[i]['fields']['ReportID'].split('-')[1]);
+  const nextid = i + 1 < ogcollection.length ? Number.parseInt(ogcollection[i + 1]['fields']['ReportID'].split('-')[1]) : null;
+
+//Check if id and nextid/number have a gap bigger than 1, if not included already, it will be added as an id
+  if (nextid && nextid - id > 1 ){
+    for (let j = id+1; j < nextid; j++){
+      if (!collectedids.includes(j)){
+        if (j < 100 ){
+        newidArray.push(`R-${String(j).padStart(3,"0")}`);
+        }
+        else {
+        newidArray.push(`R-${(j)}`); 
+        }
+      }
+    }
+  }
+}
+
+//Adding New Numbers
+let lastid = collectedids.length-1;
+let newid = collectedids[lastid]+1;
+
+if (newidArray.length < 1){
+  newid = collectedids[lastid] + 1;
+
+  for (let z = 0; newidArray.length < 1; z++){
+    if (!collectedids.includes(newid)){
+      if (newid < 100){
+        newidArray.push(`R-${String(newid).padStart(3,"0")}`);
+      }
+     else {
+      newidArray.push(`R-${(newid)}`);
+      }
+    }
+    else {
+      newid = newid+1;
+    }
+
+  }
+}
+
+return {result : newidArray[0]};
